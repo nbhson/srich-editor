@@ -1,0 +1,556 @@
+/* SRich Editor - Core Styles with CSS Variables */
+
+/* ─────────── CSS Custom Properties (Light Mode) ─────────── */
+:root {
+  --re-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --re-font-size: 15px;
+  --re-line-height: 1.6;
+  --re-border-color: #d1d5db;
+  --re-border-radius: 8px;
+  --re-bg-primary: #ffffff;
+  --re-bg-secondary: #f8f9fa;
+  --re-bg-tertiary: #f9fafb;
+  --re-text-primary: #212529;
+  --re-text-secondary: #495057;
+  --re-text-muted: #868e96;
+  --re-text-placeholder: #adb5bd;
+  --re-accent-color: #3b82f6;
+  --re-accent-hover: #2563eb;
+  --re-accent-bg: #cce5ff;
+  --re-accent-bg-hover: #b6d4fe;
+  --re-accent-border: #9ec5fe;
+  --re-accent-text: #084298;
+  --re-focus-ring-color: rgba(59, 130, 246, 0.3);
+  --re-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --re-shadow-focus: 0 0 0 2px var(--re-focus-ring-color);
+  --re-separator-color: #dee2e6;
+  --re-btn-hover-bg: #e9ecef;
+  --re-btn-active-bg: #dee2e6;
+  --re-dialog-overlay-bg: rgba(0, 0, 0, 0.5);
+  --re-dialog-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --re-danger-color: #dc2626;
+  --re-danger-border: #fca5a5;
+  --re-danger-bg: #fef2f2;
+  --re-code-bg: #212529;
+  --re-code-text: #e9ecef;
+  --re-code-inline-bg: #f1f3f5;
+  --re-code-inline-text: #e83e8c;
+}
+
+.re-wrapper {
+  border: 1px solid var(--re-border-color);
+  border-radius: var(--re-border-radius);
+  overflow: hidden;
+  font-family: var(--re-font-family);
+  background: var(--re-bg-primary);
+  box-shadow: var(--re-shadow);
+  transition: box-shadow 0.2s ease;
+}
+
+.re-wrapper:focus-within {
+  box-shadow: var(--re-shadow-focus);
+  border-color: var(--re-accent-color);
+}
+
+/* ─────────── Toolbar ─────────── */
+.re-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  background: var(--re-bg-secondary);
+  border-bottom: 1px solid var(--re-separator-color);
+  user-select: none;
+}
+
+/* ─────────── Toolbar Button ─────────── */
+.re-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--re-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.re-btn:hover {
+  background: var(--re-btn-hover-bg);
+  border-color: var(--re-separator-color);
+  color: var(--re-text-primary);
+}
+
+.re-btn:active {
+  background: var(--re-btn-active-bg);
+}
+
+.re-btn.re-active {
+  background: var(--re-accent-bg);
+  border-color: var(--re-accent-border);
+  color: var(--re-accent-text);
+}
+
+.re-btn.re-active:hover {
+  background: var(--re-accent-bg-hover);
+}
+
+/* Disabled button state */
+.re-btn.re-disabled,
+.re-btn[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ─────────── Separator ─────────── */
+.re-separator {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--re-separator-color);
+  flex-shrink: 0;
+}
+
+/* ─────────── Content Wrapper ─────────── */
+.re-content-wrapper {
+  position: relative;
+}
+
+/* ─────────── Placeholder ─────────── */
+.re-placeholder {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  color: var(--re-text-placeholder);
+  font-size: var(--re-font-size);
+  line-height: var(--re-line-height);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─────────── Content Area ─────────── */
+.re-content {
+  padding: 12px 16px;
+  font-size: var(--re-font-size);
+  line-height: var(--re-line-height);
+  color: var(--re-text-primary);
+  outline: none;
+  overflow-y: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  background: var(--re-bg-primary);
+}
+
+.re-content:empty::before {
+  content: attr(data-placeholder);
+  color: var(--re-text-placeholder);
+  pointer-events: none;
+}
+
+/* ─────────── Content formatting styles ─────────── */
+.re-content h1 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0.5em 0;
+  line-height: 1.3;
+}
+
+.re-content h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0.5em 0;
+  line-height: 1.3;
+}
+
+.re-content h3 {
+  font-size: 1.17em;
+  font-weight: 600;
+  margin: 0.5em 0;
+  line-height: 1.4;
+}
+
+.re-content p {
+  margin: 0.5em 0;
+}
+
+.re-content ul,
+.re-content ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.re-content li {
+  margin: 0.25em 0;
+}
+
+.re-content blockquote {
+  margin: 0.5em 0;
+  padding: 0.5em 1em;
+  border-left: 4px solid var(--re-accent-color);
+  background: var(--re-bg-secondary);
+  color: var(--re-text-secondary);
+  font-style: italic;
+}
+
+.re-content pre {
+  margin: 0.5em 0;
+  padding: 12px 16px;
+  background: var(--re-code-bg);
+  color: var(--re-code-text);
+  border-radius: var(--re-border-radius);
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.re-content code {
+  padding: 2px 6px;
+  background: var(--re-code-inline-bg);
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  font-size: 0.9em;
+  color: var(--re-code-inline-text);
+}
+
+.re-content pre code {
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.re-content a {
+  color: var(--re-accent-color);
+  text-decoration: underline;
+}
+
+.re-content a:hover {
+  color: var(--re-accent-hover);
+}
+
+.re-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5em 0;
+}
+
+.re-content hr {
+  border: none;
+  border-top: 2px solid var(--re-separator-color);
+  margin: 1em 0;
+}
+
+.re-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.re-content table td,
+.re-content table th {
+  border: 1px solid var(--re-separator-color);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.re-content table th {
+  background: var(--re-bg-secondary);
+  font-weight: 600;
+}
+
+/* ─────────── Status Bar ─────────── */
+.re-statusbar {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--re-bg-secondary);
+  border-top: 1px solid var(--re-separator-color);
+  font-size: 12px;
+  color: var(--re-text-muted);
+}
+
+/* ─────────── Dialog Overlay ─────────── */
+.re-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--re-dialog-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: re-dialog-fade-in 0.15s ease;
+}
+
+@keyframes re-dialog-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─────────── Dialog ─────────── */
+.re-dialog {
+  background: var(--re-bg-primary);
+  border-radius: 12px;
+  box-shadow: var(--re-dialog-shadow);
+  width: 400px;
+  max-width: 90vw;
+  overflow: hidden;
+  animation: re-dialog-slide-in 0.2s ease;
+}
+
+@keyframes re-dialog-slide-in {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ─────────── Dialog Header ─────────── */
+.re-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--re-separator-color);
+}
+
+.re-dialog-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--re-text-primary);
+}
+
+.re-dialog-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 18px;
+  color: var(--re-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.re-dialog-close:hover {
+  background: var(--re-btn-hover-bg);
+  color: var(--re-text-primary);
+}
+
+/* ─────────── Dialog Body ─────────── */
+.re-dialog-body {
+  padding: 20px;
+}
+
+.re-dialog-field {
+  margin-bottom: 16px;
+}
+
+.re-dialog-field:last-child {
+  margin-bottom: 0;
+}
+
+.re-dialog-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--re-text-secondary);
+  margin-bottom: 6px;
+}
+
+.re-dialog-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--re-border-color);
+  border-radius: var(--re-border-radius);
+  font-size: 14px;
+  color: var(--re-text-primary);
+  background: var(--re-bg-primary);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.re-dialog-input:focus {
+  outline: none;
+  border-color: var(--re-accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.re-dialog-input::placeholder {
+  color: var(--re-text-placeholder);
+}
+
+.re-dialog-input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* ─────────── Dialog Footer ─────────── */
+.re-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--re-separator-color);
+  background: var(--re-bg-tertiary);
+}
+
+.re-dialog-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--re-border-color);
+  border-radius: var(--re-border-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.re-dialog-btn-cancel {
+  background: var(--re-bg-primary);
+  color: var(--re-text-secondary);
+}
+
+.re-dialog-btn-cancel:hover {
+  background: var(--re-btn-hover-bg);
+  border-color: var(--re-text-muted);
+}
+
+.re-dialog-btn-confirm {
+  background: var(--re-accent-color);
+  color: #fff;
+  border-color: var(--re-accent-color);
+}
+
+.re-dialog-btn-confirm:hover {
+  background: var(--re-accent-hover);
+  border-color: var(--re-accent-hover);
+}
+
+.re-dialog-btn-confirm:active {
+  background: #1d4ed8;
+}
+
+.re-dialog-btn-remove {
+  background: var(--re-bg-primary);
+  color: var(--re-danger-color);
+  border-color: var(--re-danger-border);
+  margin-right: auto;
+}
+
+.re-dialog-btn-remove:hover {
+  background: var(--re-danger-bg);
+  border-color: var(--re-danger-color);
+}
+
+/* ─────────── Dialog Image Preview ─────────── */
+.re-dialog-image-preview {
+  min-height: 60px;
+  max-height: 200px;
+  border: 1px solid var(--re-separator-color);
+  border-radius: var(--re-border-radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--re-bg-tertiary);
+}
+
+.re-dialog-image-preview img {
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.re-dialog-image-error {
+  color: var(--re-text-muted);
+  font-size: 13px;
+  padding: 12px;
+  text-align: center;
+}
+
+/* ─────────── Read-only state ─────────── */
+.re-readonly .re-content {
+  cursor: default;
+}
+
+.re-readonly .re-toolbar {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ─────────── Responsive: Mobile ─────────── */
+@media screen and (max-width: 600px) {
+  .re-wrapper {
+    --re-font-size: 14px;
+    --re-border-radius: 6px;
+  }
+
+  .re-toolbar {
+    gap: 1px;
+    padding: 4px 4px;
+  }
+
+  .re-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .re-separator {
+    height: 16px;
+    margin: 0 2px;
+  }
+
+  .re-content {
+    padding: 10px 12px;
+  }
+
+  .re-placeholder {
+    top: 10px;
+    left: 12px;
+    right: 12px;
+  }
+
+  .re-dialog {
+    width: calc(100vw - 32px);
+    max-width: 400px;
+  }
+
+  .re-dialog-header,
+  .re-dialog-body,
+  .re-dialog-footer {
+    padding: 12px 16px;
+  }
+}
+
+/* ─────────── Print styles ─────────── */
+@media print {
+  .re-toolbar,
+  .re-statusbar {
+    display: none !important;
+  }
+
+  .re-wrapper {
+    border: none;
+    box-shadow: none;
+  }
+
+  .re-content {
+    padding: 0;
+    overflow: visible;
+  }
+}

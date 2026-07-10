@@ -1,0 +1,63 @@
+{
+  "name": "srich-editor",
+  "version": "1.0.0",
+  "description": "A lightweight, dependency-free rich text editor built with Vanilla JavaScript",
+  "main": "dist/srich-editor.umd.js",
+  "module": "dist/srich-editor.esm.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/srich-editor.esm.js",
+      "require": "./dist/srich-editor.umd.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./dist/styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "echo \"No tests yet\" && exit 0",
+    "lint": "eslint src/",
+    "prepublishOnly": "npm run build",
+    "demo": "open demo/index.html"
+  },
+  "keywords": [
+    "rich-text-editor",
+    "editor",
+    "wysiwyg",
+    "contenteditable",
+    "vanilla-js",
+    "lightweight",
+    "dependency-free"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nbhson/srich-editor.git"
+  },
+  "homepage": "https://github.com/nbhson/srich-editor#readme",
+  "bugs": {
+    "url": "https://github.com/nbhson/srich-editor/issues"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "rollup": "^4.9.0",
+    "rollup-plugin-css-only": "^4.5.2",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.3.3"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
