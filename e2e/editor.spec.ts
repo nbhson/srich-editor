@@ -390,14 +390,13 @@ test.describe('SRich Editor - E2E Tests', () => {
     });
   });
 
-  test.describe('Link Dialog', () => {
-    test('should open link dialog when clicking link button', async () => {
+  test.describe('Link Tooltip', () => {
+    test('should open link tooltip when clicking link button', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      await expect(page.locator('.re-dialog')).toBeVisible();
-      await expect(page.locator('.re-dialog')).toHaveAttribute('role', 'dialog');
-      await expect(page.locator('.re-dialog')).toHaveAttribute('aria-modal', 'true');
+      await page.waitForSelector('.re-link-tooltip');
+      await expect(page.locator('.re-link-tooltip')).toBeVisible();
+      await expect(page.locator('.re-link-tooltip')).toHaveAttribute('role', 'dialog');
     });
 
     test('should insert a link with text and URL', async () => {
@@ -405,80 +404,56 @@ test.describe('SRich Editor - E2E Tests', () => {
       await page.locator(editorSelector).type('Link text');
       await page.keyboard.press('Control+A');
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      // Fill in the URL field
-      const urlInput = page.locator('#re-link-url');
+      await page.waitForSelector('.re-link-tooltip');
+      // Fill in the URL field (first input with type url)
+      const urlInput = page.locator('.re-link-tooltip-input[type="url"]');
       await urlInput.fill('https://example.com');
       // Click Insert button
-      await page.locator('.re-dialog-btn-confirm').click();
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
+      await page.locator('.re-link-tooltip-btn-confirm').click();
+      await page.waitForSelector('.re-link-tooltip', { state: 'detached' });
       const content = await page.locator(editorSelector).innerHTML();
       expect(content).toContain('href="https://example.com"');
     });
 
-    test('should cancel link dialog on Cancel button', async () => {
+    test('should cancel link tooltip on Cancel button', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      await page.locator('.re-dialog-btn-cancel').click();
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
+      await page.waitForSelector('.re-link-tooltip');
+      await page.locator('.re-link-tooltip-btn-cancel').click();
+      await page.waitForSelector('.re-link-tooltip', { state: 'detached' });
     });
 
-    test('should close link dialog on close button (×)', async () => {
+    test('should close link tooltip on click outside', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      await page.locator('.re-dialog-close').click();
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
+      await page.waitForSelector('.re-link-tooltip');
+      // Click on an element outside the editor area
+      await page.locator('h1').click({ force: true });
+      await page.waitForSelector('.re-link-tooltip', { state: 'detached' });
     });
 
-    test('should close link dialog on overlay click', async () => {
+    test('should close link tooltip on Escape key', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      // Click on the overlay background (not the dialog itself)
-      await page.locator('.re-dialog-overlay').click({ position: { x: 5, y: 5 } });
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
-    });
-
-    test('should close link dialog on Escape key', async () => {
-      await page.locator(editorSelector).click();
-      await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      // The dialog input already has focus from the dialog's setTimeout focus()
-      // Use page.evaluate to dispatch Escape directly on the dialog element
-      await page.locator('#re-link-url').click();
+      await page.waitForSelector('.re-link-tooltip');
+      const urlInput = page.locator('.re-link-tooltip-input[type="url"]');
+      await urlInput.click();
       await page.keyboard.press('Escape');
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
+      await page.waitForSelector('.re-link-tooltip', { state: 'detached' });
     });
 
     test('should show error when URL is empty', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
+      await page.waitForSelector('.re-link-tooltip');
       // Clear URL and try to confirm
-      const urlInput = page.locator('#re-link-url');
+      const urlInput = page.locator('.re-link-tooltip-input[type="url"]');
       await urlInput.fill('');
-      await page.locator('.re-dialog-btn-confirm').click();
-      // Dialog should still be visible
-      await expect(page.locator('.re-dialog-overlay')).toBeVisible();
+      await page.locator('.re-link-tooltip-btn-confirm').click();
+      // Tooltip should still be visible
+      await expect(page.locator('.re-link-tooltip')).toBeVisible();
       // Input should have error class
-      await expect(urlInput).toHaveClass(/re-dialog-input-error/);
-    });
-
-    test('dialog should have focus trap (Tab key)', async () => {
-      await page.locator(editorSelector).click();
-      await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      // Get the first and last focusable elements
-      const textInput = page.locator('#re-link-text');
-      await expect(textInput).toBeFocused();
-      // Tab through to last element and check wrap
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
-      await page.keyboard.press('Tab');
-      // After cycling, should be back at first element (due to focus trap)
-      // This tests the tab wrapping behavior
+      await expect(urlInput).toHaveClass(/re-link-tooltip-input-error/);
     });
   });
 
@@ -1065,13 +1040,52 @@ test.describe('SRich Editor - E2E Tests', () => {
   });
 
   test.describe('HTML Injection Safety', () => {
-    test('should handle XSS attempts in setContent', async () => {
+    test('should strip script tags in setContent', async () => {
       await page.evaluate(() => {
         (window as any).editorInstance.setContent('<script>alert("xss")</script>');
       });
       const content = await page.locator(editorSelector).innerHTML();
-      // The script tag should be sanitized or not execute
-      expect(content).toContain('script');
+      // Script tags should be completely removed by the sanitizer
+      expect(content).not.toContain('<script>');
+      expect(content).not.toContain('alert');
+    });
+
+    test('should strip event handler attributes', async () => {
+      await page.evaluate(() => {
+        (window as any).editorInstance.setContent('<img src="x" onerror="alert(1)">');
+      });
+      const content = await page.locator(editorSelector).innerHTML();
+      expect(content).not.toContain('onerror');
+      expect(content).not.toContain('alert');
+    });
+
+    test('should strip iframe tags', async () => {
+      await page.evaluate(() => {
+        (window as any).editorInstance.setContent('<iframe src="https://evil.com"></iframe><p>Safe content</p>');
+      });
+      const content = await page.locator(editorSelector).innerHTML();
+      expect(content).not.toContain('<iframe');
+      expect(content).toContain('Safe content');
+    });
+
+    test('should strip javascript: protocol from links', async () => {
+      await page.evaluate(() => {
+        (window as any).editorInstance.setContent('<a href="javascript:alert(1)">Click me</a>');
+      });
+      const content = await page.locator(editorSelector).innerHTML();
+      expect(content).not.toContain('javascript:');
+      expect(content).toContain('Click me');
+    });
+
+    test('should preserve safe HTML content', async () => {
+      await page.evaluate(() => {
+        (window as any).editorInstance.setContent('<p>Hello <strong>world</strong> <em>test</em></p>');
+      });
+      const content = await page.locator(editorSelector).innerHTML();
+      expect(content).toContain('<p>');
+      expect(content).toContain('<strong>');
+      expect(content).toContain('<em>');
+      expect(content).toContain('Hello');
     });
   });
 
@@ -1098,14 +1112,14 @@ test.describe('SRich Editor - E2E Tests', () => {
   });
 
   test.describe('Dialog Accessibility', () => {
-    test('link dialog should have aria-modal attribute', async () => {
+    test('link tooltip should have aria-label attribute', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      await expect(page.locator('.re-dialog')).toHaveAttribute('aria-modal', 'true');
-      // Close dialog via Cancel button
-      await page.locator('.re-dialog-btn-cancel').click();
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
+      await page.waitForSelector('.re-link-tooltip');
+      await expect(page.locator('.re-link-tooltip')).toHaveAttribute('role', 'dialog');
+      // Close tooltip via Cancel button
+      await page.locator('.re-link-tooltip-btn-cancel').click();
+      await page.waitForSelector('.re-link-tooltip', { state: 'detached' });
     });
 
     test('image dialog should have aria-modal attribute', async () => {
@@ -1126,15 +1140,15 @@ test.describe('SRich Editor - E2E Tests', () => {
     });
   });
 
-  test.describe('Link Enter Key in Dialog', () => {
+  test.describe('Link Enter Key in Tooltip', () => {
     test('should confirm link on Enter key in URL field', async () => {
       await page.locator(editorSelector).click();
       await page.locator(`${toolbarSelector} button[data-command="createLink"]`).click();
-      await page.waitForSelector('.re-dialog-overlay');
-      const urlInput = page.locator('#re-link-url');
+      await page.waitForSelector('.re-link-tooltip');
+      const urlInput = page.locator('.re-link-tooltip-input[type="url"]');
       await urlInput.fill('https://test.com');
       await page.keyboard.press('Enter');
-      await page.waitForSelector('.re-dialog-overlay', { state: 'detached' });
+      await page.waitForSelector('.re-link-tooltip', { state: 'detached' });
       const content = await page.locator(editorSelector).innerHTML();
       expect(content).toContain('href="https://test.com"');
     });

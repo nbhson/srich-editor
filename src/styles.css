@@ -483,6 +483,137 @@
   text-align: center;
 }
 
+/* ─────────── Link Tooltip / Popover ─────────── */
+.re-link-tooltip {
+  position: fixed;
+  z-index: 10001;
+  background: var(--re-bg-primary);
+  border: 1px solid var(--re-border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 10px;
+  min-width: 320px;
+  max-width: 420px;
+  animation: re-tooltip-slide-in 0.15s ease;
+  font-family: var(--re-font-family);
+  pointer-events: auto;
+}
+
+@keyframes re-tooltip-slide-in {
+  from { transform: translateY(4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.re-link-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.re-link-tooltip-row:last-of-type {
+  margin-bottom: 0;
+}
+
+.re-link-tooltip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--re-bg-secondary);
+  color: var(--re-text-muted);
+}
+
+.re-link-tooltip-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--re-border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--re-text-primary);
+  background: var(--re-bg-primary);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.re-link-tooltip-input:focus {
+  border-color: var(--re-accent-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.re-link-tooltip-input::placeholder {
+  color: var(--re-text-placeholder);
+}
+
+.re-link-tooltip-input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+}
+
+.re-link-tooltip-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--re-separator-color);
+}
+
+.re-link-tooltip-spacer {
+  flex: 1;
+}
+
+.re-link-tooltip-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--re-border-color);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.re-link-tooltip-btn-cancel {
+  background: var(--re-bg-primary);
+  color: var(--re-text-secondary);
+}
+
+.re-link-tooltip-btn-cancel:hover {
+  background: var(--re-btn-hover-bg);
+  border-color: var(--re-text-muted);
+}
+
+.re-link-tooltip-btn-confirm {
+  background: var(--re-accent-color);
+  color: #fff;
+  border-color: var(--re-accent-color);
+}
+
+.re-link-tooltip-btn-confirm:hover {
+  background: var(--re-accent-hover);
+  border-color: var(--re-accent-hover);
+}
+
+.re-link-tooltip-btn-confirm:active {
+  background: #1d4ed8;
+}
+
+.re-link-tooltip-btn-remove {
+  background: var(--re-bg-primary);
+  color: var(--re-danger-color);
+  border-color: var(--re-danger-border);
+}
+
+.re-link-tooltip-btn-remove:hover {
+  background: var(--re-danger-bg);
+  border-color: var(--re-danger-color);
+}
+
 /* ─────────── Read-only state ─────────── */
 .re-readonly .re-content {
   cursor: default;

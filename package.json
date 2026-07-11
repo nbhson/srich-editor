@@ -39,17 +39,15 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nbhson/srich-editor.git"
+    "url": "git+https://github.com/nbhson/srich-editor.git"
   },
   "homepage": "https://github.com/nbhson/srich-editor#readme",
   "bugs": {
     "url": "https://github.com/nbhson/srich-editor/issues"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.3.0",
-    "@types/node": "^26.1.1",
     "rollup": "^4.9.0",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-dts": "^6.1.0",

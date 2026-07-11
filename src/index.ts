@@ -41,7 +41,8 @@ import {
   LocaleStrings,
 } from './types';
 import { defaultToolbar, icons } from './toolbar';
-import { showLinkDialog, showImageDialog } from './dialog';
+import { showLinkDialog, showLinkTooltip, showImageDialog } from './dialog';
+import { sanitizeHTML, sanitizeLinkURL, sanitizeImageURL } from './sanitizer';
 
 export { createEditor };
 export type {
@@ -52,7 +53,8 @@ export type {
   LocaleStrings,
 };
 export { defaultToolbar, icons };
-export { showLinkDialog, showImageDialog };
+export { showLinkDialog, showLinkTooltip, showImageDialog };
+export { sanitizeHTML, sanitizeLinkURL, sanitizeImageURL };
 
 // Default export for convenience
 export default { createEditor };

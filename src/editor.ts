@@ -1,6 +1,7 @@
 import { RichEditorOptions, RichEditorInstance, CustomButton } from './types';
 import { icons, defaultToolbar } from './toolbar';
-import { showLinkDialog, showImageDialog } from './dialog';
+import { showLinkTooltip, showImageDialog } from './dialog';
+import { sanitizeHTML, sanitizeLinkURL, sanitizeImageURL } from './sanitizer';
 
 /**
  * Default editor options
@@ -260,7 +261,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
     const { selectedText, linkUrl, linkNode } = getSelectionInfo();
     const savedRange = saveSelection();
 
-    const result = await showLinkDialog(selectedText, linkUrl || '', locale);
+    const result = await showLinkTooltip(selectedText, linkUrl || '', locale);
 
     if (result) {
       saveToUndoStack();
@@ -275,7 +276,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
       }
 
       if (linkNode) {
-        linkNode.setAttribute('href', result.url);
+        linkNode.setAttribute('href', sanitizeLinkURL(result.url));
         if (result.text && linkNode.textContent !== result.text) {
           linkNode.textContent = result.text;
         }
@@ -291,7 +292,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
             if (contentArea.contains(range.commonAncestorContainer)) {
               const selectedContent = range.extractContents();
               const anchor = document.createElement('a');
-              anchor.href = result.url;
+              anchor.href = sanitizeLinkURL(result.url);
               // Use textContent OR appendChild, not both — otherwise text is duplicated
               if (result.text && result.text !== selectedText) {
                 anchor.textContent = result.text;
@@ -305,7 +306,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
               selection.addRange(range);
             } else {
               const anchor = document.createElement('a');
-              anchor.href = result.url;
+              anchor.href = sanitizeLinkURL(result.url);
               anchor.textContent = result.text || selectedText;
               contentArea.appendChild(anchor);
             }
@@ -313,7 +314,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
           }
         } else {
           const anchor = document.createElement('a');
-          anchor.href = result.url;
+          anchor.href = sanitizeLinkURL(result.url);
           anchor.textContent = result.text || result.url;
           const selection = window.getSelection();
           if (selection && selection.rangeCount > 0) {
@@ -345,7 +346,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
       saveToUndoStack();
 
       const img = document.createElement('img');
-      img.src = result.url;
+      img.src = sanitizeImageURL(result.url);
       img.alt = result.alt;
 
       const selection = window.getSelection();
@@ -659,7 +660,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
   // ─────────── Initial setup ───────────
   if (config.content) {
-    contentArea.innerHTML = config.content;
+    contentArea.innerHTML = sanitizeHTML(config.content);
   }
 
   if (config.readOnly) {
@@ -707,7 +708,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
     setContent(html: string): void {
       saveToUndoStack();
-      contentArea.innerHTML = html;
+      contentArea.innerHTML = sanitizeHTML(html);
       lastSavedContent = contentArea.innerHTML;
       handleInput();
     },
@@ -741,8 +742,9 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
       observer.disconnect();
       if (throttleTimer) clearTimeout(throttleTimer);
       if (debounceTimer) clearTimeout(debounceTimer);
-      // Remove any open dialogs
+      // Remove any open dialogs and tooltips
       document.querySelectorAll('.re-dialog-overlay').forEach(el => el.remove());
+      document.querySelectorAll('.re-link-tooltip').forEach(el => el.remove());
       wrapper.remove();
     },
 
