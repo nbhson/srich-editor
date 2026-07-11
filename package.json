@@ -20,7 +20,8 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "npx playwright test",
+    "test:e2e": "npx playwright test",
     "lint": "eslint src/",
     "prepublishOnly": "npm run build",
     "demo": "open demo/index.html"
@@ -34,7 +35,7 @@
     "lightweight",
     "dependency-free"
   ],
-  "author": "",
+  "author": "Son Nguyen (https://github.com/nbhson)",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -45,8 +46,10 @@
     "url": "https://github.com/nbhson/srich-editor/issues"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^26.1.1",
     "rollup": "^4.9.0",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-dts": "^6.1.0",

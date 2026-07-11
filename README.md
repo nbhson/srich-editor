@@ -154,6 +154,9 @@ Creates a new editor instance.
 |--------|---------|-------------|
 | `getContent()` | `string` | Get HTML content |
 | `setContent(html)` | `void` | Set HTML content |
+| `getText()` | `string` | Get plain text content |
+| `getCharacterCount()` | `number` | Get character count |
+| `getWordCount()` | `number` | Get word count |
 | `execCommand(cmd, val?)` | `void` | Execute a command |
 | `queryCommandState(cmd)` | `boolean` | Check if command is active |
 | `focus()` | `void` | Focus the editor |
@@ -162,6 +165,10 @@ Creates a new editor instance.
 | `disable()` | `void` | Disable the editor |
 | `getElement()` | `HTMLElement` | Get wrapper element |
 | `destroy()` | `void` | Remove the editor |
+| `undo()` | `void` | Undo last change |
+| `redo()` | `void` | Redo last undone change |
+| `canUndo()` | `boolean` | Check if undo is available |
+| `canRedo()` | `boolean` | Check if redo is available |
 
 ### Getting Content with `getContent()`
 
@@ -262,15 +269,18 @@ The editor comes with 21 built-in toolbar icons:
 | Ctrl+B | Bold |
 | Ctrl+I | Italic |
 | Ctrl+U | Underline |
+| Ctrl+Z | Undo |
+| Ctrl+Y | Redo |
+| Ctrl+Shift+Z | Redo (Mac) |
 
 ## Bundle Sizes
 
 | File | Size | Format |
 |------|------|--------|
-| `srich-editor.umd.js` | ~11 KB | UMD (script tags) |
-| `srich-editor.esm.js` | ~11 KB | ES Modules |
-| `styles.css` | ~4 KB | CSS |
-| **Total package** | **~11 KB** | gzipped |
+| `srich-editor.umd.js` | ~24 KB | UMD (script tags) |
+| `srich-editor.esm.js` | ~24 KB | ES Modules |
+| `styles.css` | ~8 KB | CSS |
+| **Total package** | **~24 KB** | minified |
 
 ## Framework Integration
 

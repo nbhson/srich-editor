@@ -126,6 +126,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
     lastSavedContent = contentArea.innerHTML;
     undoStack.length = 0;
     redoStack.length = 0;
+    updateUndoRedoButtons();
   }
 
   function updateUndoRedoButtons(): void {
@@ -291,8 +292,12 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
               const selectedContent = range.extractContents();
               const anchor = document.createElement('a');
               anchor.href = result.url;
-              anchor.textContent = result.text || selectedText;
-              anchor.appendChild(selectedContent);
+              // Use textContent OR appendChild, not both — otherwise text is duplicated
+              if (result.text && result.text !== selectedText) {
+                anchor.textContent = result.text;
+              } else {
+                anchor.appendChild(selectedContent);
+              }
               range.insertNode(anchor);
               range.setStartAfter(anchor);
               range.collapse(true);
