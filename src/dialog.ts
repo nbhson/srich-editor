@@ -255,15 +255,17 @@ export function showLinkTooltip(
     });
 
     // Close on click outside
-    function handleClickOutside(e: MouseEvent) {
+    function handleClickOutside(e: PointerEvent | MouseEvent) {
       if (!tooltip.contains(e.target as Node)) {
         cleanup();
         resolve(null);
+        document.removeEventListener('pointerdown', handleClickOutside);
         document.removeEventListener('mousedown', handleClickOutside);
       }
     }
     // Delay to avoid immediately closing from the click that opened it
     setTimeout(() => {
+      document.addEventListener('pointerdown', handleClickOutside);
       document.addEventListener('mousedown', handleClickOutside);
     }, 0);
 

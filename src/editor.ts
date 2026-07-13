@@ -1,6 +1,8 @@
-import { RichEditorOptions, RichEditorInstance, CustomButton } from './types';
+import { RichEditorOptions, RichEditorInstance, CustomButton, ToolbarItem } from './types';
 import { icons, defaultToolbar } from './toolbar';
 import { showLinkTooltip, showImageDialog } from './dialog';
+import { createCommentsManager } from './comments';
+import { exportToPDF, exportToDocx } from './export';
 import { sanitizeHTML, sanitizeLinkURL, sanitizeImageURL } from './sanitizer';
 import { showColorPicker } from './color-picker';
 
@@ -100,7 +102,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
   // ─────────── State ───────────
   let isDisabled = false;
-  let currentClassName = config.className || '';
+  let commentsManager: ReturnType<typeof createCommentsManager> | null = null;
 
   // ─────────── Custom Undo/Redo Stack ───────────
   const undoStack: string[] = [];
@@ -334,6 +336,27 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
     }
   }
 
+  // ─────────── Comment handling ───────────
+  async function handleCommentAction(): Promise<void> {
+    if (!commentsManager || isDisabled) return;
+
+    const selection = window.getSelection();
+    const selectedText = selection?.toString() || '';
+
+    if (!selectedText.trim()) {
+      // No text selected, just toggle the sidebar
+      commentsManager.toggleSidebar();
+      return;
+    }
+
+    // Show comment prompt dialog
+    const commentText = await commentsManager.showCommentPrompt(selectedText);
+    if (commentText) {
+      saveToUndoStack();
+      commentsManager.addComment(selectedText, commentText);
+    }
+  }
+
   // ─────────── Image handling ───────────
   async function handleInsertImage(): Promise<void> {
     const savedRange = saveSelection();
@@ -394,6 +417,24 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
     if (command === 'insertImage') {
       handleInsertImage();
+      return;
+    }
+
+    // Handle comment command
+    if (command === 're:comment') {
+      handleCommentAction();
+      return;
+    }
+
+    // Handle export commands
+    if (command === 're:exportPDF') {
+      const exportOpts = typeof config.export === 'object' ? config.export : {};
+      exportToPDF(contentArea, { documentTitle: exportOpts.documentTitle || document.title });
+      return;
+    }
+    if (command === 're:exportWord') {
+      const exportOpts2 = typeof config.export === 'object' ? config.export : {};
+      exportToDocx(contentArea, { documentTitle: exportOpts2.documentTitle || document.title });
       return;
     }
 
@@ -490,7 +531,8 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
   // ─────────── Toolbar building ───────────
   function buildToolbar(): void {
-    const toolbarItems = config.toolbar || defaultToolbar;
+    // Build toolbar items, injecting comment + export buttons if configured
+    const toolbarItems = buildToolbarConfig();
 
     toolbarItems.forEach((item) => {
       if (item.type === 'separator') {
@@ -535,6 +577,52 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
     // Register custom buttons after default toolbar items
     registerCustomButtons();
+  }
+
+  /**
+   * Build the full toolbar config, injecting comment/export buttons when enabled
+   */
+  function buildToolbarConfig(): ToolbarItem[] {
+    // If user provided explicit toolbar, use it as-is
+    if (config.toolbar) {
+      return config.toolbar;
+    }
+
+    // Start from default toolbar
+    const toolbar = [...defaultToolbar];
+
+    // Add comment button if configured
+    if (config.comments) {
+      toolbar.push({ type: 'separator' });
+      toolbar.push({
+        type: 'button',
+        name: 'comment',
+        icon: 'comment',
+        tooltip: 'Comments',
+        command: 're:comment',
+      });
+    }
+
+    // Add export buttons if configured
+    if (config.export) {
+      toolbar.push({ type: 'separator' });
+      toolbar.push({
+        type: 'button',
+        name: 'exportPDF',
+        icon: 'exportPDF',
+        tooltip: 'Export as PDF',
+        command: 're:exportPDF',
+      });
+      toolbar.push({
+        type: 'button',
+        name: 'exportWord',
+        icon: 'exportWord',
+        tooltip: 'Export as Word',
+        command: 're:exportWord',
+      });
+    }
+
+    return toolbar;
   }
 
   // ─────────── Toolbar keyboard navigation ───────────
@@ -669,9 +757,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
   }
 
   // ─────────── Focus management ───────────
-  let hasFocus = false;
   function handleFocus(): void {
-    hasFocus = true;
     updateToolbarState();
     if (config.onFocus) {
       config.onFocus();
@@ -679,7 +765,6 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
   }
 
   function handleBlur(): void {
-    hasFocus = false;
     updateToolbarState();
     if (config.onBlur) {
       config.onBlur();
@@ -737,7 +822,6 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
   }
 
   if (config.className) {
-    currentClassName = config.className;
     wrapper.classList.add(...config.className.split(/\s+/).filter(Boolean));
   }
 
@@ -753,6 +837,14 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
   // Build toolbar
   buildToolbar();
+
+  // Initialize comments manager if configured
+  if (config.comments) {
+    commentsManager = createCommentsManager(contentArea, {
+      userName: config.comments.userName,
+      onChange: config.comments.onCommentsChange,
+    }, config.comments.locale);
+  }
 
   // Initial state
   updatePlaceholder();

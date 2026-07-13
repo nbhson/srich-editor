@@ -73,6 +73,7 @@
   <div class="actions">
     <button class="btn" onclick="showContent()">Get HTML Content</button>
     <button class="btn" onclick="showIsEmpty()">Check if Empty</button>
+    <button class="btn" onclick="showComments()">Show Comments (JSON)</button>
   </div>
 
   <!-- HTML Output -->
@@ -81,11 +82,25 @@
     <pre id="output">Type something in the editor above, then click "Get HTML Content".</pre>
   </div>
 
+  <!-- Export dependencies (needed for PDF and Word export) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx/build/index.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
   <script src="../dist/srich-editor.umd.js"></script>
   <script>
     var editor = SRichEditor.createEditor({
       container: '#editor',
       placeholder: 'Start typing your content here...',
+      comments: {
+        userName: 'Demo User',
+        onCommentsChange: function(comments) {
+          console.log('Comments updated:', comments.length);
+        },
+      },
+      export: {
+        documentTitle: 'Demo Document',
+      },
       onChange: function(content) {
         document.getElementById('output').textContent = content;
       },
@@ -102,6 +117,11 @@
     function showIsEmpty() {
       var empty = editor.isEmpty();
       alert('Editor is ' + (empty ? 'empty' : 'not empty'));
+    }
+
+    function showComments() {
+      var comments = editor.getComments();
+      document.getElementById('output').textContent = JSON.stringify(comments, null, 2);
     }
 
     // Set initial output

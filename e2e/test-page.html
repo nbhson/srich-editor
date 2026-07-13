@@ -26,6 +26,15 @@
     var editor = SRichEditor.createEditor({
       container: '#editor',
       placeholder: 'Start typing here...',
+      comments: {
+        userName: 'Test User',
+        onCommentsChange: function(comments) {
+          logEvent('onCommentsChange: ' + comments.length);
+        },
+      },
+      export: {
+        documentTitle: 'Test Document',
+      },
       onChange: function(content) { logEvent('onChange: ' + content); },
       onReady: function() { logEvent('onReady fired'); },
       onFocus: function() { logEvent('onFocus fired'); },

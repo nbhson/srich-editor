@@ -5,6 +5,10 @@ A lightweight, dependency-free rich text editor built with Vanilla JavaScript.
 [![npm version](https://img.shields.io/npm/v/srich-editor.svg)](https://www.npmjs.com/package/srich-editor)
 [![license](https://img.shields.io/npm/l/srich-editor.svg)](https://github.com/nbhson/srich-editor/blob/main/LICENSE)
 
+<p align="center">
+  <img src="demo/screenshot.png" alt="SRich Editor Demo" width="100%">
+</p>
+
 ## Table of Contents
 
 - [SRich Editor](#srich-editor)

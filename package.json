@@ -48,6 +48,7 @@
     "url": "https://github.com/nbhson/srich-editor/issues"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.3.0",
     "jsdom": "^29.1.1",
@@ -64,5 +65,9 @@
   ],
   "engines": {
     "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "docx": "^9.7.1",
+    "html2pdf.js": "^0.14.0"
   }
 }

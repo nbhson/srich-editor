@@ -48,13 +48,6 @@ const SAFE_LINK_PROTOCOLS = new Set([
   '',
 ]);
 
-/** Safe URL protocols allowed for images */
-const SAFE_IMAGE_PROTOCOLS = new Set([
-  'http:',
-  'https:',
-  'data:',
-]);
-
 /**
  * Sanitize an HTML string by removing dangerous elements and attributes.
  * @param html - The raw HTML string to sanitize

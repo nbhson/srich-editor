@@ -29,6 +29,13 @@
  *
  * // Custom buttons
  * editor.execCommand('customButtonName');
+ *
+ * // Comments
+ * const editor = createEditor({
+ *   container: '#editor',
+ *   comments: { userName: 'Alice' },
+ *   export: { pdf: true, word: true },
+ * });
  * ```
  */
 
@@ -39,18 +46,33 @@ import {
   ToolbarItem,
   CustomButton,
   LocaleStrings,
+  CommentsConfig,
+  ExportConfig,
+  CommentData,
+  CommentReplyData,
 } from './types';
 import { defaultToolbar, icons } from './toolbar';
 import { showLinkDialog, showLinkTooltip, showImageDialog } from './dialog';
 import { sanitizeHTML, sanitizeLinkURL, sanitizeImageURL } from './sanitizer';
+import { createCommentsManager, Comment, CommentReply, CommentsOptions, CommentsLocale } from './comments';
+import { exportToPDF, exportToDocx } from './export';
 
 export { createEditor };
+export { createCommentsManager, exportToPDF, exportToDocx };
 export type {
   RichEditorOptions,
   RichEditorInstance,
   ToolbarItem,
   CustomButton,
   LocaleStrings,
+  CommentsConfig,
+  ExportConfig,
+  CommentData,
+  CommentReplyData,
+  Comment,
+  CommentReply,
+  CommentsOptions,
+  CommentsLocale,
 };
 export { defaultToolbar, icons };
 export { showLinkDialog, showLinkTooltip, showImageDialog };

@@ -26,6 +26,7 @@ export default [
   // Build UMD and ESM bundles
   {
     input: 'src/index.ts',
+    external: ['html2pdf.js', 'docx'],
     output: [
       {
         file: 'dist/srich-editor.umd.js',
@@ -34,6 +35,10 @@ export default [
         exports: 'named',
         banner,
         sourcemap: true,
+        globals: {
+          'html2pdf.js': 'html2pdf',
+          'docx': 'docx',
+        },
       },
       {
         file: 'dist/srich-editor.esm.js',

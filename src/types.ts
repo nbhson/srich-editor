@@ -38,10 +38,76 @@ export interface RichEditorOptions {
   maxLength?: number;
   /** Locale for UI strings */
   locale?: LocaleStrings;
+  /** Comments configuration. Set to an object to enable comments panel. */
+  comments?: CommentsConfig;
+  /** Export configuration. Set to true or an object to enable export buttons. */
+  export?: boolean | ExportConfig;
   /** Number of undo levels to keep */
   maxUndoLevels?: number;
   /** Auto-focus editor on creation */
   autoFocus?: boolean;
+}
+
+/**
+ * Comments configuration
+ */
+export interface CommentsConfig {
+  /** Current user name for comments */
+  userName: string;
+  /** Callback when comments change */
+  onCommentsChange?: (comments: CommentData[]) => void;
+  /** Locale strings for comments UI */
+  locale?: CommentsLocaleStrings;
+}
+
+/**
+ * Comment data (serializable)
+ */
+export interface CommentData {
+  id: string;
+  author: string;
+  content: string;
+  timestamp: number;
+  selectedText: string;
+  resolved: boolean;
+  replies: CommentReplyData[];
+}
+
+/**
+ * Comment reply data (serializable)
+ */
+export interface CommentReplyData {
+  id: string;
+  author: string;
+  content: string;
+  timestamp: number;
+}
+
+/**
+ * Locale strings for comments
+ */
+export interface CommentsLocaleStrings {
+  addComment?: string;
+  reply?: string;
+  resolve?: string;
+  delete?: string;
+  resolved?: string;
+  placeholder?: string;
+  replyPlaceholder?: string;
+  noComments?: string;
+  commentsTitle?: string;
+}
+
+/**
+ * Export configuration
+ */
+export interface ExportConfig {
+  /** Document title for exported files */
+  documentTitle?: string;
+  /** Show PDF export button */
+  pdf?: boolean;
+  /** Show Word export button */
+  word?: boolean;
 }
 
 /**
