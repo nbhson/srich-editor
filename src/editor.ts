@@ -2,6 +2,7 @@ import { RichEditorOptions, RichEditorInstance, CustomButton } from './types';
 import { icons, defaultToolbar } from './toolbar';
 import { showLinkTooltip, showImageDialog } from './dialog';
 import { sanitizeHTML, sanitizeLinkURL, sanitizeImageURL } from './sanitizer';
+import { showColorPicker } from './color-picker';
 
 /**
  * Default editor options
@@ -371,7 +372,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
   }
 
   // ─────────── Toolbar action handler ───────────
-  function handleToolbarAction(command: string, value?: string): void {
+  function handleToolbarAction(command: string, value?: string, anchorEl?: HTMLElement): void {
     if (isDisabled) return;
 
     // Block undo/redo from using execCommand — we handle them ourselves
@@ -396,15 +397,29 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
       return;
     }
 
+    // Color picker commands
+    if ((command === 'foreColor' || command === 'hiliteColor') && anchorEl) {
+      showColorPicker(anchorEl).then((color) => {
+        if (color) {
+          saveToUndoStack();
+          document.execCommand(command, false, color);
+          updateToolbarState();
+          throttledHandleInput();
+        }
+      });
+      return;
+    }
+
     saveToUndoStack();
 
     if (command === 'formatBlock' && value) {
       document.execCommand('formatBlock', false, value);
+      updateToolbarState();
+      throttledHandleInput();
       return;
     }
 
     document.execCommand(command, false, value || '');
-    saveToUndoStack();
     updateToolbarState();
     throttledHandleInput();
   }
@@ -511,7 +526,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
         });
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          handleToolbarAction(item.command!, item.value);
+          handleToolbarAction(item.command!, item.value, btn);
         });
 
         toolbar.appendChild(btn);
@@ -520,6 +535,55 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
     // Register custom buttons after default toolbar items
     registerCustomButtons();
+  }
+
+  // ─────────── Toolbar keyboard navigation ───────────
+  function handleToolbarKeydown(e: KeyboardEvent): void {
+    if (isDisabled) return;
+
+    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+      e.preventDefault();
+      const focusableBtns = Array.from(
+        toolbar.querySelectorAll<HTMLElement>('.re-btn:not([aria-disabled="true"])'),
+      );
+      if (focusableBtns.length === 0) return;
+
+      const currentIndex = focusableBtns.indexOf(document.activeElement as HTMLElement);
+      let nextIndex: number;
+
+      switch (e.key) {
+        case 'ArrowRight':
+          nextIndex = currentIndex < 0 || currentIndex >= focusableBtns.length - 1
+            ? 0
+            : currentIndex + 1;
+          break;
+        case 'ArrowLeft':
+          nextIndex = currentIndex <= 0
+            ? focusableBtns.length - 1
+            : currentIndex - 1;
+          break;
+        case 'Home':
+          nextIndex = 0;
+          break;
+        case 'End':
+          nextIndex = focusableBtns.length - 1;
+          break;
+        default:
+          return;
+      }
+
+      focusableBtns[nextIndex].focus();
+      return;
+    }
+
+    if (e.key === 'Enter' || e.key === ' ') {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('re-btn')) {
+        e.preventDefault();
+        target.click();
+        return;
+      }
+    }
   }
 
   // ─────────── Keyboard shortcuts ───────────
@@ -638,12 +702,15 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
 
   const observer = new MutationObserver(handleMutation);
 
-  // ─────────── Bind events ───────────
-  contentArea.addEventListener('input', () => {
+  // ─────────── Named event handlers for proper cleanup ───────────
+  function handleInputEvent(): void {
     if (!checkMaxLength()) return;
     saveToUndoStack();
     throttledHandleInput();
-  });
+  }
+
+  // ─────────── Bind events ───────────
+  contentArea.addEventListener('input', handleInputEvent);
   contentArea.addEventListener('keyup', updateToolbarState);
   contentArea.addEventListener('mouseup', updateToolbarState);
   contentArea.addEventListener('keydown', handleKeydown);
@@ -681,6 +748,8 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
   if (config.statusBarVisible === false) {
     statusBar.style.display = 'none';
   }
+
+  toolbar.addEventListener('keydown', handleToolbarKeydown);
 
   // Build toolbar
   buildToolbar();
@@ -730,7 +799,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
     },
 
     destroy(): void {
-      contentArea.removeEventListener('input', throttledHandleInput);
+      contentArea.removeEventListener('input', handleInputEvent);
       contentArea.removeEventListener('keyup', updateToolbarState);
       contentArea.removeEventListener('mouseup', updateToolbarState);
       contentArea.removeEventListener('keydown', handleKeydown);
@@ -739,6 +808,7 @@ export function createEditor(options: RichEditorOptions): RichEditorInstance {
       contentArea.removeEventListener('blur', handleBlur);
       contentArea.removeEventListener('touchstart', handleTouchStart);
       contentArea.removeEventListener('touchend', handleTouchEnd);
+      toolbar.removeEventListener('keydown', handleToolbarKeydown);
       observer.disconnect();
       if (throttleTimer) clearTimeout(throttleTimer);
       if (debounceTimer) clearTimeout(debounceTimer);
